@@ -14,14 +14,15 @@ knitr::opts_chunk$set(echo = TRUE)
 ### Question
 In probability, $_nC_r$ means $\frac{n!}{( n - r)! * r!}$. For example, $_5C_3$ evaluates to 10.
 
-R has built in functions for choose() and factorial(). Your task is to write your own variation of the choose() function, that does not use either of these functions.
+R has built in functions for `choose()` and `factorial()`. Your task is to write your own variation of the `choose()` function, that does not use either of these functions.
 
-Your code should adhere to the style guidelines provided by Hadley Wickham in this week's reading.  You need to create your code and some test code, and deliver your code, results, and documentation in a single R Markdown file.
+Your code should adhere to the [style guidelines](http://adv-r.had.co.nz/Style.html) provided by Hadley Wickham in this week's reading.  You need to create your code and some test code, and deliver your code, results, and documentation in a single R Markdown file.
+
 ***
 
-### R Output
+### Helper Function
 ```{r}
-# Create a function to calculate the factorials within the combination
+# Create a helper function, calc_fact, to calculate the factorials within the combination
 
 calc_fact <- function(num) {
     if(num == 0)
@@ -30,8 +31,11 @@ calc_fact <- function(num) {
     }
     else return(num * calc_fact(num - 1))
 }
+```
 
-# The calc_combination function will first evaluate a number of base cases before evaluating the result.
+### Combination Function Using the Helper Function
+```{r}
+# The calc_combination function will first elimnate base cases before evaluating the result.
 
 calc_combination <- function(set_total, set_subset) {
     if (set_subset > set_total || set_subset < 0 || set_total < 0) {
@@ -46,12 +50,55 @@ calc_combination <- function(set_total, set_subset) {
 }
 ```
 
+***
+
 ### Code Evaluation
-We will now evaluate whether the code above works properly by evaluating the results of` calc_combination` with the `choose()` base function.
+Let us now test our function. For a simple example, we will consider a set of three fruits--apple, banana, and orange--and see how many unordered sets of 2 we can create.
+
+* apple, banana
+* apple, orange
+* banana, orange
+
+In this example, we can create 3 sets of 2 from our total set of 3. Now let's use our `calc_combination()` function to see if we get the same result:
 
 ```{r}
-calc_combination(5, 3) == choose(5, 3)
-calc_combination(10, 0) == choose (10, 0)
-calc_combination(2, 4) == choose (2, 4)
-calc_combination(15, 7) == choose (15, 7)
+calc_combination(3,2)
 ```
+
+We will now evaluate whether the above code works correctly by evaluating the results of` calc_combination()` with the `choose()` R base function[^1].
+
+```{r results='asis', echo=FALSE}
+set_total_nums <- c(5, 10, 2, 15)
+set_subset_nums <- c(3, 0, 4, 7)
+our_answers <- c(calc_combination(5, 3), calc_combination(10, 0), calc_combination(2, 4), calc_combination(15, 7))
+r_answers <- c(choose(5, 3), choose(10, 0), choose(2, 4), choose(15, 7))
+ans_results <- our_answers == r_answers
+table_results <- data.frame("Set_Total"=set_total_nums, "Subset"=set_subset_nums, "calc_combination"=our_answers, "choose"=r_answers, "Validation"=ans_results)
+
+knitr::kable(table_results, align = 'c')
+```
+
+```{r echo = FALSE, eval=FALSE}
+
+## Hidden R Code
+## I had a question on below for loop which I was unable to execute properly
+## In the below, only the last iteration in both for loops evaluates--could you help me understand why?
+
+func_vector <- c("calc_combination", "choose")
+set_total_nums <- c(5, 10, 2, 15)
+set_subset_nums <- c(3, 0, 4, 7)
+table_results <- data.frame(Set_Total=as.numeric(), Subset=as.numeric(), calc_combination=as.numeric(), choose=as.numeric())
+
+for (i in length(set_total_nums)) {
+    table_results[i, "Set_Total"] <- set_total_nums[i]
+    table_results[i, "Subset"] <- set_subset_nums[i]
+    
+    for (n in length(func_vector)) {
+         table_results[i, func_vector[n]] <- do.call(func_vector[n], args = list(set_total_nums[i], set_subset_nums[i]))
+    }
+}
+```
+
+***
+
+[^1]: While the `calc_combination()` function assumes that there can be no negative set totals, in reality, `choose()` will return a real number when the set total is less than zero. 
