@@ -1,0 +1,57 @@
+---
+title: "R Bridge Week 3 Assignment"
+author: "Steven Han"
+date: "`r Sys.Date()`"
+fontsize: 8
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+***
+### Question
+In probability, $_nC_r$ means $\frac{n!}{( n - r)! * r!}$. For example, $_5C_3$ evaluates to 10.
+
+R has built in functions for choose() and factorial(). Your task is to write your own variation of the choose() function, that does not use either of these functions.
+
+Your code should adhere to the style guidelines provided by Hadley Wickham in this week's reading.  You need to create your code and some test code, and deliver your code, results, and documentation in a single R Markdown file.
+***
+
+### R Output
+```{r}
+# Create a function to calculate the factorials within the combination
+
+calc_fact <- function(num) {
+    if(num == 0)
+    {
+        return(1)
+    }
+    else return(num * calc_fact(num - 1))
+}
+
+# The calc_combination function will first evaluate a number of base cases before evaluating the result.
+
+calc_combination <- function(set_total, set_subset) {
+    if (set_subset > set_total || set_subset < 0 || set_total < 0) {
+        return(0)
+    } else if (set_subset == set_total || set_subset == 0) {
+        return(1)
+    } else {
+        numerator = calc_fact(set_total)
+        denominator = calc_fact(set_total - set_subset) * calc_fact(set_subset)
+        return(numerator / denominator)
+    } 
+}
+```
+
+### Code Evaluation
+We will now evaluate whether the code above works properly by evaluating the results of` calc_combination` with the `choose()` base function.
+
+```{r}
+calc_combination(5, 3) == choose(5, 3)
+calc_combination(10, 0) == choose (10, 0)
+calc_combination(2, 4) == choose (2, 4)
+calc_combination(15, 7) == choose (15, 7)
+```
