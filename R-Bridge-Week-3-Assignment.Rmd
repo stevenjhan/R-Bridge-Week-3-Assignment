@@ -78,25 +78,27 @@ table_results <- data.frame("Set_Total"=set_total_nums, "Subset"=set_subset_nums
 knitr::kable(table_results, align = 'c')
 ```
 
-```{r echo = FALSE, eval=FALSE}
+```{r results='asis', echo = FALSE, eval=FALSE}
 
 ## Hidden R Code
-## I had a question on below for loop which I was unable to execute properly
-## In the below, only the last iteration in both for loops evaluates--could you help me understand why?
+## Testing a nested for loop and the do.call function for traversing through test cases
 
 func_vector <- c("calc_combination", "choose")
 set_total_nums <- c(5, 10, 2, 15)
 set_subset_nums <- c(3, 0, 4, 7)
-table_results <- data.frame(Set_Total=as.numeric(), Subset=as.numeric(), calc_combination=as.numeric(), choose=as.numeric())
+table_results <- data.frame(Set_Total=as.numeric(), Subset=as.numeric(), calc_combination=as.numeric(), choose=as.numeric(), Validation=as.logical())
 
-for (i in length(set_total_nums)) {
+for (i in 1:length(set_total_nums)) {
     table_results[i, "Set_Total"] <- set_total_nums[i]
     table_results[i, "Subset"] <- set_subset_nums[i]
     
-    for (n in length(func_vector)) {
+    for (n in 1:length(func_vector)) {
          table_results[i, func_vector[n]] <- do.call(func_vector[n], args = list(set_total_nums[i], set_subset_nums[i]))
     }
+    table_results[i, "Validation"] <- length(unique(t(table_results[i, func_vector]))) == 1
 }
+
+knitr::kable(table_results, align = 'c')
 ```
 
 ***
